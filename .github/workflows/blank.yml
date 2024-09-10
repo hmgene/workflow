@@ -42,7 +42,7 @@ jobs:
         run: |
           docker build --build-arg GITHUB_REPO_URL=${GITHUB_REPO_URL} \
           --build-arg REPO_TOKEN=${REPO_TOKEN} \
-          -t twokims/fastq-dump:latest -f ./Dockerfile .
+          -t twokims/fastq-dump:latest -f ./fastq-dump/Dockerfile .
   
       - name: Push Docker image to registry
-        run: docker push twokims/cnv-hichip:latest
+        run: docker push twokims/fastq-dump:latest
