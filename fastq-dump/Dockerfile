@@ -2,7 +2,7 @@
 FROM ncbi/sra-tools
 
 # Update package list and install bash
-RUN apt-get update && apt-get install -y bash
+RUN apk update && apk add bash 
 
 # Set the default shell to bash (optional)
 SHELL ["/bin/bash", "-c"]
