@@ -7,5 +7,3 @@ RUN apk update && apk add --no-cache \
     python3 \
     py3-pip
 
-# Install AWS CLI
-RUN pip3 install awscli
