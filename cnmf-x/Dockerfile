@@ -3,6 +3,11 @@ FROM mambaorg/micromamba:1.5.0
 # Create a working directory
 WORKDIR /app
 
+RUN apt-get update && apt-get install -y \
+    g++ \
+    build-essential \
+    && apt-get clean
+    
 # Optional: create an environment using an environment.yml file
 COPY ./cnmf-x/environment.yml /app/environment.yml
 
