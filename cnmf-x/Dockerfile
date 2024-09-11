@@ -7,7 +7,7 @@ WORKDIR /app
 COPY ./cnmf-x/environment.yml /app/environment.yml
 
 # Create the conda environment
-RUN micromamba create --yes --file environment.yml && micromamba clean --all --yes
+RUN micromamba create --yes --file /app/environment.yml && micromamba clean --all --yes
 
 # Activate the environment and set the default shell
 SHELL ["/bin/bash", "-c"]
