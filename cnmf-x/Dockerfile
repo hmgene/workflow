@@ -4,7 +4,7 @@ FROM mambaorg/micromamba:1.5.0
 WORKDIR /app
 
 # Optional: create an environment using an environment.yml file
-COPY environment.yml /app/environment.yml
+COPY ./cnmf-x/environment.yml /app/environment.yml
 
 # Create the conda environment
 RUN micromamba create --yes --file environment.yml && micromamba clean --all --yes
