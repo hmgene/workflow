@@ -30,5 +30,3 @@ ENV PATH=$PATH:/root/google-cloud-sdk/bin
 # Set the default entrypoint to bash
 ENTRYPOINT ["/bin/bash"]
 
-# Verify installations
-RUN sra-tools --version && gcloud --version
