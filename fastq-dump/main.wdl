@@ -8,6 +8,7 @@ task dn {
 
     command <<<
         # Run fasterq-dump to download the FASTQ files
+
         fasterq-dump ~{srr}
 
         # Check if both paired-end files were generated
@@ -30,12 +31,14 @@ task dn {
         String srr1 = "~{odir}/~{srr}_1.fastq.gz"
         String srr2 = "~{odir}/~{srr}_2.fastq.gz"
     }
-    runtime {
-        docker: "twokims/fastq-dump"
-        cpu: 4                     
+/*
+//    runtime {
+//        docker: "twokims/fastq-dump"
+//        cpu: 4                     
         memory: "16 GB"             
         disks: "local-disk 100 GB"  
     }
+*/
 }
 
 workflow fqdp {
