@@ -1,4 +1,4 @@
-version 1.0
+version 1.2
 
 task dn {
     input {
@@ -26,19 +26,16 @@ task dn {
             exit 1
         fi
     >>>
-
     output {
         String srr1 = "~{odir}/~{srr}_1.fastq.gz"
         String srr2 = "~{odir}/~{srr}_2.fastq.gz"
     }
-/*
-//    runtime {
-//        docker: "twokims/fastq-dump"
-//        cpu: 4                     
-        memory: "16 GB"             
-        disks: "local-disk 100 GB"  
+    runtime {
+        docker: "twokims/fastq-dump:latest"
+        cpu: "4"
+        memory: "16 GB"
+        disks: "local-disk 100 HDD"
     }
-*/
 }
 
 workflow fqdp {
