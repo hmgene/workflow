@@ -1,57 +1,48 @@
-version 1.2
+version 1.0
 
 task dn {
     input {
         String srr
         String odir
+	String opts
     }
 
     command <<<
-        # Run fasterq-dump to download the FASTQ files
-
-        fasterq-dump ~{srr}
-
-        # Check if both paired-end files were generated
-        if [ -f ~{srr}_1.fastq ] && [ -f ~{srr}_2.fastq ]; then
-            # Compress the FASTQ files
-            gzip ~{srr}_1.fastq
-            gzip ~{srr}_2.fastq
-
-            # Move compressed files to the output directory
-            gsutil -m mv ~{srr}_1.fastq.gz ~{odir}/
-            gsutil -m mv ~{srr}_2.fastq.gz ~{odir}/
-        else
-            # Log error and exit if the paired files are not found
-            echo "Paired-end files not found" >&2
-            exit 1
-        fi
+	# Run fasterq-dump to download the FASTQ files
+	echo ~{odir}
+	fastq-dump ~{ opts } --gzip  ~{srr}
+	#mkdir -p ~{odir}
+	#mv ~{srr}*.fastq.gz ~{odir}
+	gsutil -m mv ~{srr}*.fastq.gz ~{odir}/
+	gsutil ls ~{odir}/~{srr}*.fastq.gz > list.txt
     >>>
     output {
-        String srr1 = "~{odir}/~{srr}_1.fastq.gz"
-        String srr2 = "~{odir}/~{srr}_2.fastq.gz"
+ 	# Array[String] srrs = glob("~{odir}/~{srr}*.fastq.gz")
+	Array[String] srrs = read_lines("list.txt")
     }
     runtime {
         docker: "twokims/fastq-dump:latest"
         cpu: "4"
-        memory: "16 GB"
-        disks: "local-disk 100 HDD"
+        memory: "4 GB"
+        disks: "local-disk 200 HDD"
     }
 }
 
 workflow fqdp {
     input {
-        String srr 
-        String odir 
+        String input_srr 
+        String input_odir 
+	String? input_options
     }
     # Call the dn task for each SRR from the input CSV
     call dn {
         input:
-                srr = srr,
-                odir = odir
+                srr = input_srr,
+                odir = input_odir,
+		opts = select_first([input_options," --split-3 "])
     }
     output {
-        String srr1 = dn.srr1
-        String srr2 = dn.srr2
+	Array[String] fastq_files = dn.srrs
     }
 }
 
