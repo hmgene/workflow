@@ -1,10 +1,6 @@
 version: 1.2
 workflows:
   - subclass: WDL
-    primaryDescriptorPath: /fastq-dump  # absolute path
-    testParameterFiles: ""  # absolute path
-    readMePath: "" # absolute path
-    authors:
-      - name: Hyunmin Kim 
-        email: human.gim@gmail.com
-          
+    primaryDescriptorPath: /fastq-dump/main.wdl  # absolute path
+    testParameterFiles: 
+      - /fastq-dump/input.json
