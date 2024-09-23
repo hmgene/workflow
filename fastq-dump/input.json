@@ -1,4 +1,3 @@
 {
-  "fqdp.input_srr":"SRR000001",
-  "fqdp.input_odir":"out"
+  "fqdp.bam_url":"gs://millerlab-bucket/hyunmin/SRR12354564/Foreman_753_03142019_1_possorted_genome_bam.bam"
 }

@@ -1,5 +1,26 @@
 version 1.0
 
+task bm2fq {
+	input { 
+		File bam_file
+		String odir
+	}
+	String fn = basename(bam_file, ".bam")
+	command <<<
+		echo "~{bam_file} =>  ~{odir}/~{fn}/~{fn}.*.fastq.gz"
+		bamtofastq ~{bam_file}  ~{odir} 
+	>>>
+	output { 
+		Array[File] fqs= glob("~{odir}/~{fn}/~{fn}.*.fastq.gz")
+	}
+    runtime {
+        docker: "twokims/fastq-dump:latest"
+        cpu: "2"
+        memory: "4 GB"
+        disks: "local-disk 200 HDD"
+    }
+}
+
 task dn {
     input {
         String srr
@@ -28,21 +49,41 @@ task dn {
     }
 }
 
+task up {
+	input {
+		String ifile
+		String obucket
+	}
+
+	command <<<
+		gsutil cp ${ifile} ${obucket}
+	>>>
+
+	output {
+		String ofile = obucket+"/"+basename(ifile)
+	}
+}
 workflow fqdp {
     input {
-        String input_srr 
-        String input_odir 
-	String? input_options
+        File input_bam
+	String input_odir
+	String input_bucket
     }
     # Call the dn task for each SRR from the input CSV
-    call dn {
+    call bm2fq {
         input:
-                srr = input_srr,
-                odir = input_odir,
-		opts = select_first([input_options," --split-3 "])
+                bam_file = input_bam,
+		odir = input_odir
+    }
+    scatter(file in bm2fq.fqs ){ 
+	call up {
+		input:
+			ifile = file,
+			obucket = input_bucket
+	}
     }
     output {
-	Array[String] fastq_files = dn.srrs
+	Array[String] fastq_files = bm2fq.fqs
     }
 }
 
