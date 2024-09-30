@@ -1,0 +1,296 @@
+2024-09-19 19:23:39,116 INFO  - MaterializeWorkflowDescriptorActor [UUID(07a8eed9)]: Parsing workflow as WDL 1.0
+2024-09-19 19:23:39,161 INFO  - MaterializeWorkflowDescriptorActor [UUID(07a8eed9)]: Call-to-Backend assignments: starsolo_count.run_starsolo -> PAPIv2-CloudNAT, starsolo_workflow.generate_count_config -> PAPIv2-CloudNAT
+2024-09-19 19:23:39,162 WARN  - PAPIv2-CloudNAT [UUID(07a8eed9)]: Key/s [queueArn] is/are not supported by backend. Unsupported attributes will not be part of job executions.
+2024-09-19 19:23:39,162 WARN  - PAPIv2-CloudNAT [UUID(07a8eed9)]: Key/s [queueArn] is/are not supported by backend. Unsupported attributes will not be part of job executions.
+2024-09-19 19:23:42,424 INFO  - WorkflowExecutionActor-07a8eed9-8cc2-403b-a16c-5441c088670e [UUID(07a8eed9)]: Starting starsolo_workflow.generate_count_config
+2024-09-19 19:23:45,521 INFO  - 07a8eed9-8cc2-403b-a16c-5441c088670e-EngineJobExecutionActor-starsolo_workflow.generate_count_config:NA:1 [UUID(07a8eed9)]: Could not copy a suitable cache hit for 07a8eed9:starsolo_workflow.generate_count_config:-1:1. No copy attempts were made.
+2024-09-19 19:23:45,521 WARN  - PipelinesApiAsyncBackendJobExecutionActor [UUID(07a8eed9)starsolo_workflow.generate_count_config:NA:1]: Unrecognized runtime attribute keys: queueArn
+2024-09-19 19:23:45,522 INFO  - PipelinesApiAsyncBackendJobExecutionActor [UUID(07a8eed9)starsolo_workflow.generate_count_config:NA:1]: `set -e
+export TMPDIR=/tmp
+
+python /software/check_uri.py "gcp" "gs://fc-secure-387f19e5-0d81-411b-9524-aec54db8e20a/Hyunmin/starsolo_test/Foreman_753_03142019_1_0_1_HK5KVDSXX/out"
+
+python <<CODE
+import re, sys
+import pandas as pd
+
+df = pd.read_csv('/cromwell_root/fc-secure-387f19e5-0d81-411b-9524-aec54db8e20a/Hyunmin/starsolo_test/input_within_terra.csv', header = 0, dtype = str, index_col = False)
+df.columns = df.columns.str.strip()
+for c in df.columns:
+    df[c] = df[c].str.strip()
+
+regex_pat = re.compile('[^a-zA-Z0-9_-]')
+if any(df['Sample'].str.contains(regex_pat)):
+    print('Sample must contain only alphanumeric characters, hyphens, and underscores.')
+    print('Examples of common characters that are not allowed are the space character and the following: ?()[]/\=+<>:;"\',*^| &')
+    sys.exit(1)
+
+if 'Assay' not in df.columns:
+    df['Assay'] = 'tenX_v3'
+else:
+    df.loc[df['Assay'].isna(), 'Assay'] = 'tenX_v3'
+
+for idx, row in df.iterrows():
+    row['Location'] = re.sub('/+$', '', row['Location'])
+    if re.search('[^a-zA-Z0-9_-]', row['Sample']) is not None:
+        print('Sample must contain only alphanumeric characters, hyphens, and underscores.', file = sys.stderr)
+        print('Examples of common characters that are not allowed are the space character and the following: ?()[]/\=+<>:;"\',*^| &', file = sys.stderr)
+        sys.exit(1)
+
+with open('sample_ids.txt', 'w') as fo1, open('sample2dir.txt', 'w') as fo2, open('sample2genome.txt', 'w') as fo3, open('sample2assay.txt', 'w') as fo4:
+    for sample_id in df['Sample'].unique():
+        df_local = df.loc[df['Sample'] == sample_id]
+
+        dirs = df_local['Location'].values
+
+        if df_local['Reference'].unique().size > 1:
+            print("Detected multiple references for sample " + sample_id + "!", file = sys.stderr)
+            sys.exit(1)
+        reference = df_local['Reference'].iat[0]
+
+        if df_local['Assay'].unique().size > 1:
+            print("Detected multiple assay names for sample " + sample_id + "!", file = sys.stderr)
+        assay = df_local['Assay'].iat[0]
+
+        fo1.write(sample_id + '\n')
+        fo2.write(sample_id + '\t' + ','.join(dirs) + '\n')
+        fo3.write(sample_id + '\t' + reference + '\n')
+        fo4.write(sample_id + '\t' + assay + '\n')
+CODE`
+2024-09-19 19:23:46,354 INFO  - PipelinesApiAsyncBackendJobExecutionActor [UUID(07a8eed9)starsolo_workflow.generate_count_config:NA:1]: Adjusting boot disk size to 12 GB: 10 GB (runtime attributes) + 1 GB (user command image) + 1 GB (Cromwell support images)
+2024-09-19 19:23:50,235 INFO  - PipelinesApiAsyncBackendJobExecutionActor [UUID(07a8eed9)starsolo_workflow.generate_count_config:NA:1]: job id: projects/318606233597/locations/us-central1/operations/3191852865255189206
+2024-09-19 19:23:50,899 INFO  - PipelinesApiAsyncBackendJobExecutionActor [UUID(07a8eed9)starsolo_workflow.generate_count_config:NA:1]: Status change from - to Initializing
+2024-09-19 19:24:40,552 INFO  - PipelinesApiAsyncBackendJobExecutionActor [UUID(07a8eed9)starsolo_workflow.generate_count_config:NA:1]: Status change from Initializing to Running
+2024-09-19 19:26:33,513 INFO  - PipelinesApiAsyncBackendJobExecutionActor [UUID(07a8eed9)starsolo_workflow.generate_count_config:NA:1]: Status change from Running to Success
+2024-09-19 19:26:44,896 INFO  - 07a8eed9-8cc2-403b-a16c-5441c088670e-SubWorkflowExecutionActor-SubWorkflow-starsolo_count:0:1 [UUID(07a8eed9)SubWorkflow-starsolo_count:0:1]: Running subworkflow: 493387c0-2b1d-4968-8d8e-2712aa9afd79, root: 07a8eed9-8cc2-403b-a16c-5441c088670e
+2024-09-19 19:26:49,134 INFO  - 493387c0-2b1d-4968-8d8e-2712aa9afd79-SubWorkflowActor-SubWorkflow-starsolo_count:0:1 [UUID(493387c0)]: Starting starsolo_count.run_starsolo
+2024-09-19 19:26:55,583 INFO  - 493387c0-2b1d-4968-8d8e-2712aa9afd79-EngineJobExecutionActor-starsolo_count.run_starsolo:NA:1 [UUID(493387c0)]: Could not copy a suitable cache hit for 493387c0:starsolo_count.run_starsolo:-1:1. No copy attempts were made.
+2024-09-19 19:26:55,583 WARN  - PipelinesApiAsyncBackendJobExecutionActor [UUID(493387c0)starsolo_count.run_starsolo:NA:1]: Unrecognized runtime attribute keys: queueArn
+2024-09-19 19:26:55,588 INFO  - PipelinesApiAsyncBackendJobExecutionActor [UUID(493387c0)starsolo_count.run_starsolo:NA:1]: `set -e
+export TMPDIR=/tmp
+export BACKEND=gcp
+monitor_script.sh > monitoring.log &
+
+mkdir genome_ref
+tar -zxf "/cromwell_root/regev-lab/resources/starsolo/GRCh38-2020-A-starsolo.tar.gz" -C genome_ref --strip-components 1
+rm "/cromwell_root/regev-lab/resources/starsolo/GRCh38-2020-A-starsolo.tar.gz"
+
+mkdir result
+
+python <<CODE
+import os, re
+import pegasusio as io
+from fnmatch import fnmatch
+from subprocess import check_call, CalledProcessError, DEVNULL, STDOUT
+
+def set_up_input_fastq_files(l, folder, pattern):
+    file_list = [f for f in os.listdir(folder) if fnmatch(f, "*" + pattern)]
+    file_list.sort()
+    for f in file_list:
+        l.append(folder + '/' + f)
+
+def generate_args_list(args_dict):
+    res_list = list()
+    for k, v in args_dict.items():
+        if isinstance(v, list):
+            res_list.extend([k] + v)
+        else:
+            res_list.extend([k, v])
+    return res_list
+
+r1_list = list()
+r2_list = list()
+for i, directory in enumerate('gs://fc-secure-387f19e5-0d81-411b-9524-aec54db8e20a/Hyunmin/starsolo_test/Foreman_753_03142019_1_0_1_HK5KVDSXX'.split(',')):
+    directory = re.sub('/+$', '', directory) # remove trailing slashes
+    target = "sample_" + str(i)
+    try:
+        call_args = ['strato', 'exists', '--backend', 'gcp', directory + '/sample/']
+        print(' '.join(call_args))
+        check_call(call_args, stdout=DEVNULL, stderr=STDOUT)
+        call_args = ['strato', 'sync', '--backend', 'gcp', '-m', directory + '/sample', target]
+        print(' '.join(call_args))
+        check_call(call_args)
+
+        set_up_input_fastq_files(r1_list, target, '_S*_L*_R1_001.fastq.gz')
+        set_up_input_fastq_files(r2_list, target, '_S*_L*_R2_001.fastq.gz')
+
+    except CalledProcessError:
+        if not os.path.exists(target):
+            os.mkdir(target)
+        call_args = ['strato', 'cp', '--backend', 'gcp', '-m', directory + '/sample_S*_L*_R1_001.fastq.gz' , target + '/']
+        print(' '.join(call_args))
+        check_call(call_args)
+        set_up_input_fastq_files(r1_list, target, '_S*_L*_R1_001.fastq.gz')
+
+        call_args = ['strato', 'cp', '--backend', 'gcp', '-m', directory + '/sample_S*_L*_R2_001.fastq.gz' , target + '/']
+        print(' '.join(call_args))
+        check_call(call_args)
+        set_up_input_fastq_files(r2_list, target, '_S*_L*_R2_001.fastq.gz')
+
+assert len(r1_list) == len(r2_list)
+file_ext = '.fastq.gz' if os.path.splitext("_S*_L*_R1_001.fastq.gz")[-1] == '.gz' else '.fastq'
+
+def remove_extra_space(s):
+    return re.sub(' +', ' ', s.strip())
+
+call_args = ['STAR', '--genomeDir', 'genome_ref', '--runThreadN', '32', '--outFileNamePrefix', 'result/']
+
+barcode_read = 'read1'
+args_dict = dict()
+
+if 'tenX_v3' in ['tenX_v2', 'tenX_v3', 'ShareSeq', 'tenX_5p', 'tenX_5p_pe', 'tenX_multiome']:
+    args_dict['--soloType'] = 'CB_UMI_Simple'
+    args_dict['--soloCBmatchWLtype'] = '1MM_multi_Nbase_pseudocounts'
+    args_dict['--soloUMIfiltering'] = 'MultiGeneUMI_CR'
+    args_dict['--soloUMIdedup'] = '1MM_CR'
+    args_dict['--outFilterScoreMin'] = '30'
+    args_dict['--outSAMtype'] = ['BAM', 'SortedByCoordinate']
+    args_dict['--outSAMattributes'] = ['CR', 'UR', 'CY', 'UY', 'CB', 'UB']
+
+    if 'tenX_v3' in ['tenX_v3', 'tenX_multiome']:
+        args_dict['--soloCBstart'] = '1'
+        args_dict['--soloCBlen'] = '16'
+        args_dict['--soloUMIstart'] = '17'
+        args_dict['--soloUMIlen'] = '12'
+        args_dict['--clipAdapterType'] = 'CellRanger4'
+        barcode_read = 'read1'
+    elif 'tenX_v3' in ['tenX_v2', 'tenX_5p', 'tenX_5p_pe']:
+        args_dict['--soloCBstart'] = '1'
+        args_dict['--soloCBlen'] = '16'
+        args_dict['--soloUMIstart'] = '17'
+        args_dict['--soloUMIlen'] = '10'
+
+        if 'tenX_v3' == 'tenX_v2':
+            args_dict['--clipAdapterType'] = 'CellRanger4'
+            barcode_read = 'read1'
+        elif 'tenX_v3' == 'tenX_5p':
+            barcode_read = 'read1'
+            args_dict['--soloStrand'] = 'Reverse'
+        else:
+            args_dict['--soloBarcodeMate'] = '1'
+            args_dict['--clip5pNbases'] = ['39', '0']
+            barcode_read = 'read2'
+    elif 'tenX_v3' == 'ShareSeq':
+        args_dict['--soloCBstart'] = '1'
+        args_dict['--soloCBlen'] = '24'
+        args_dict['--soloUMIstart'] = '25'
+        args_dict['--soloUMIlen'] = '10'
+        barcode_read = 'read2'
+elif 'tenX_v3' in ['SeqWell', 'DropSeq']:
+    args_dict['--soloType'] = 'CB_UMI_Simple'
+    args_dict['--soloCBstart'] = '1'
+    args_dict['--soloCBlen'] = '12'
+    args_dict['--soloUMIstart'] = '13'
+    args_dict['--soloUMIlen'] = '8'
+    args_dict['--outSAMtype'] = ['BAM', 'SortedByCoordinate']
+    args_dict['--outSAMattributes'] = ['CR', 'UR', 'CY', 'UY', 'CB', 'UB']
+    barcode_read = 'read1'
+else:
+    args_dict['--outSAMattributes'] = ['BAM', 'Unsorted']
+
+if file_ext == '.fastq.gz':
+    args_dict['--readFilesCommand'] = 'zcat'
+
+if barcode_read == 'read1':
+    args_dict['--readFilesIn'] = [','.join(r2_list), ','.join(r1_list)]
+else:
+    args_dict['--readFilesIn'] = [','.join(r1_list), ','.join(r2_list)]
+
+if '' != '':
+    args_dict['--outSAMtype'] = remove_extra_space('').split(' ')
+if '' != '':
+    args_dict['--soloType'] = ''
+
+if '/cromwell_root/regev-lab/resources/starsolo/3M-february-2018.txt' != '' and os.path.basename('/cromwell_root/regev-lab/resources/starsolo/3M-february-2018.txt') != 'null':
+    fn_tup = os.path.splitext("/cromwell_root/regev-lab/resources/starsolo/3M-february-2018.txt")
+    if fn_tup[1] == '.gz':
+        with open(fn_tup[0], 'w') as fp:
+            check_call(['zcat', "/cromwell_root/regev-lab/resources/starsolo/3M-february-2018.txt"], stdout=fp)
+        whitelist_file = fn_tup[0]
+    else:
+        whitelist_file = '/cromwell_root/regev-lab/resources/starsolo/3M-february-2018.txt'
+    args_dict['--soloCBwhitelist'] = whitelist_file
+else:
+    args_dict['--soloCBwhitelist'] = 'None'
+
+if '' != '':
+    args_dict['--soloCBstart'] = ''
+if '' != '':
+    args_dict['--soloCBlen'] = ''
+if '' != '':
+    args_dict['--soloUMIstart'] = ''
+if '' != '':
+    args_dict['--soloUMIlen'] = ''
+if '0' != '':
+    args_dict['--soloBarcodeReadLength'] = '0'
+if '' != '':
+    args_dict['--soloBarcodeMate'] = ''
+if '' == 'CB_UMI_Complex':
+    if '' != '':
+        args_dict['--soloCBposition'] = remove_extra_space('').split(' ')
+    if '' != '':
+        args_dict['--soloUMIposition'] = remove_extra_space('').split(' ')
+if '' != '':
+    args_dict['--soloAdapterSequence'] = ''
+if '' != '':
+    args_dict['--soloAdapterMismatchesNmax'] = ''
+if '' != '':
+    args_dict['--soloCBmatchWLtype'] = ''
+if '' != '':
+    args_dict['--soloInputSAMattrBarcodeSeq'] = remove_extra_space('').split(' ')
+if '' != '':
+    args_dict['--soloInputSAMattrBarcodeQual'] = remove_extra_space('').split(' ')
+if '' != '':
+    args_dict['--soloStrand'] = ''
+if '' != '':
+    feature_list = remove_extra_space('').split(' ')
+    if ('Velocyto' in feature_list) and ('Gene' not in feature_list):
+        feature_list.append('Gene')
+    args_dict['--soloFeatures'] = feature_list
+if '' != '':
+    args_dict['--soloMultiMappers'] = remove_extra_space('').split(' ')
+if '' != '':
+    args_dict['--soloUMIdedup'] = remove_extra_space('').split(' ')
+if '' != '':
+    args_dict['--soloUMIfiltering'] = remove_extra_space('').split(' ')
+if '' != '':
+    args_dict['--soloCellFilter'] = remove_extra_space('').split(' ')
+if '' != '':
+    args_dict['--soloOutFormatFeaturesGeneField3'] = remove_extra_space('').split(' ')
+
+if '' != '':
+    args_dict['--limitBAMsortRAM'] = ''
+if '' != '':
+    args_dict['--outBAMsortingBinsN'] = ''
+
+call_args += generate_args_list(args_dict)
+
+print(' '.join(call_args))
+check_call(call_args)
+
+# Generate 10x h5 format output
+def gen_10x_h5(file_path, outname, genome):
+    print("Generate 10x h5 format file of "+file_path+"...")
+    data = io.read_input(file_path, genome=genome)
+    io.write_output(data, outname+'.h5')
+
+if '' == '':
+    feature_list = ['Gene']
+for feature in feature_list:
+    if not feature in ['Gene', 'GeneFull', 'Velocyto']:
+        continue
+    prefix = "result/Solo.out/" + feature
+    f_list = os.listdir(prefix)
+    if 'raw' in f_list:
+        gen_10x_h5(prefix+'/raw', prefix+'/raw/'+feature, "GRCh38-2020-A")
+    if 'filtered' in f_list:
+        gen_10x_h5(prefix+'/filtered', prefix+'/filtered/'+feature, "GRCh38-2020-A")
+CODE
+
+strato sync --backend gcp -m result "gs://fc-secure-387f19e5-0d81-411b-9524-aec54db8e20a/Hyunmin/starsolo_test/Foreman_753_03142019_1_0_1_HK5KVDSXX/out/sample"`
+2024-09-19 19:26:55,894 INFO  - PipelinesApiAsyncBackendJobExecutionActor [UUID(493387c0)starsolo_count.run_starsolo:NA:1]: Adjusting boot disk size to 13 GB: 10 GB (runtime attributes) + 2 GB (user command image) + 1 GB (Cromwell support images)
+2024-09-19 19:27:00,225 INFO  - PipelinesApiAsyncBackendJobExecutionActor [UUID(493387c0)starsolo_count.run_starsolo:NA:1]: job id: projects/318606233597/locations/us-central1/operations/9345997860766435289
+2024-09-19 19:27:00,320 INFO  - PipelinesApiAsyncBackendJobExecutionActor [UUID(493387c0)starsolo_count.run_starsolo:NA:1]: Status change from - to Initializing
+2024-09-19 19:27:44,105 INFO  - PipelinesApiAsyncBackendJobExecutionActor [UUID(493387c0)starsolo_count.run_starsolo:NA:1]: Status change from Initializing to Running
+2024-09-19 19:46:20,534 INFO  - PipelinesApiAsyncBackendJobExecutionActor [UUID(493387c0)starsolo_count.run_starsolo:NA:1]: Status change from Running to Failed
+2024-09-19 19:46:25,175 INFO  - $b [UUID(07a8eed9)]: Copying workflow logs from /cromwell-workflow-logs/workflow.07a8eed9-8cc2-403b-a16c-5441c088670e.log to gs://fc-secure-387f19e5-0d81-411b-9524-aec54db8e20a/submissions/e6a39f2b-3f46-4c25-b350-b48e78dc484c/workflow.logs/workflow.07a8eed9-8cc2-403b-a16c-5441c088670e.log

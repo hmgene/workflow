@@ -24,6 +24,8 @@ RUN curl -sSL https://sdk.cloud.google.com | bash && \
     /root/google-cloud-sdk/bin/gcloud components install beta && \
     echo "source /root/google-cloud-sdk/path.bash.inc" >> ~/.bashrc
 
+RUN curl -sSL https://github.com/10XGenomics/bamtofastq/releases/download/v1.4.1/bamtofastq_linux -o /usr/local/bin/bamtofastq && chmod 744 /usr/local/bin/bamtofastq 
+
 # Set environment variables
 ENV PATH=$PATH:/root/google-cloud-sdk/bin
 
