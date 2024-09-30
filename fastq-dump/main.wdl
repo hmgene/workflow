@@ -13,12 +13,9 @@ task dn {
 	fastq-dump ~{ opts } --gzip  ~{srr}
 	#mkdir -p ~{odir}
 	#mv ~{srr}*.fastq.gz ~{odir}
-	gsutil -m mv ~{srr}*.fastq.gz ~{odir}/
-	gsutil ls ~{odir}/~{srr}*.fastq.gz > list.txt
     >>>
     output {
  	# Array[String] srrs = glob("~{odir}/~{srr}*.fastq.gz")
-	Array[String] srrs = read_lines("list.txt")
     }
     runtime {
         docker: "twokims/fastq-dump:latest"
@@ -26,6 +23,20 @@ task dn {
         memory: "4 GB"
         disks: "local-disk 200 HDD"
     }
+}
+
+task up {
+	input {
+		Array[File] i
+		String o
+	}
+	command <<<
+	gsutil -m mv ~{i} ~{o}/
+	gsutil ls ~{o}/~{i}.fastq.gz > list.txt
+	>>>
+	output {
+		Array[String] fastqs = read_lines("list.txt")
+	}
 }
 
 workflow fqdp {
