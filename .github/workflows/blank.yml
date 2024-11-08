@@ -15,7 +15,7 @@ jobs:
         dockerfile:
           - { path: "./fastq-dump/Dockerfile", tag: "twokims/fastq-dump:latest" }
           - { path: "./cnmf-x/Dockerfile", tag: "twokims/cnmf-x:latest" }
-          - { path: "./infercnv/Dockerfile", tag: "twokims/cnmf-x:latest" }
+          - { path: "./infercnv/Dockerfile", tag: "twokims/infercnv-x:latest" }
 
     steps:
       - uses: actions/checkout@v4
