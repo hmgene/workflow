@@ -16,11 +16,12 @@ RUN curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cl
     && rm google-cloud-sdk-415.0.0-linux-x86_64.tar.gz
 
 # Add the Google Cloud SDK to PATH
+RUN bash
 ENV PATH="/usr/local/google-cloud-sdk/bin:${PATH}"
 RUN mkdir /mnt/data
 WORKDIR /mnt/data
 ENV GOOGLE_APPLICATION_CREDENTIALS="/root/service-account-key.json"
-CMD ["/bin/bash"]
+
 
 RUN export GCSFUSE_REPO=gcsfuse-`lsb_release -c -s`
 RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.asc] https://packages.cloud.google.com/apt $GCSFUSE_REPO main" | sudo tee /etc/apt/sources.list.d/gcsfuse.list
