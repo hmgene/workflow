@@ -1,6 +1,6 @@
 # Start with the trinityctat/infercnv base image
 FROM trinityctat/infercnv
-
+USER root
 # Install dependencies for Google Cloud SDK
 RUN apt-get update && apt-get install -y \
     curl \
@@ -26,8 +26,8 @@ ENV GOOGLE_APPLICATION_CREDENTIALS="/root/service-account-key.json"
 RUN export GCSFUSE_REPO=gcsfuse-`lsb_release -c -s`
 RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.asc] https://packages.cloud.google.com/apt $GCSFUSE_REPO main" | sudo tee /etc/apt/sources.list.d/gcsfuse.list
 RUN curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo tee /usr/share/keyrings/cloud.google.asc
-RUN sudo apt-get update
-RUN sudo apt-get install gcsfuse
+RUN apt-get update
+RUN apt-get install gcsfuse
 
 
 # Verify installation
