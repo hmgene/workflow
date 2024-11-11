@@ -22,4 +22,5 @@ ENV GCSFUSE_REPO=gcsfuse-`lsb_release -c -s`
 
 RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.asc] https://packages.cloud.google.com/apt $GCSFUSE_REPO main" | sudo tee /etc/apt/sources.list.d/gcsfuse.list
 
+RUN curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo tee /usr/share/keyrings/cloud.google.asc
 # Verify installation
