@@ -17,9 +17,12 @@ RUN curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cl
 
 # Add the Google Cloud SDK to PATH
 ENV PATH="/usr/local/google-cloud-sdk/bin:${PATH}"
+
 RUN export GCSFUSE_REPO=gcsfuse-`lsb_release -c -s`
-RUN echo "deb https://packages.cloud.google.com/apt $GCSFUSE_REPO main" | sudo tee /etc/apt/sources.list.d/gcsfuse.list
+RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.asc] https://packages.cloud.google.com/apt $GCSFUSE_REPO main" | sudo tee /etc/apt/sources.list.d/gcsfuse.list
 RUN curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo tee /usr/share/keyrings/cloud.google.asc
 RUN sudo apt-get update
 RUN sudo apt-get install gcsfuse
+
+
 # Verify installation
