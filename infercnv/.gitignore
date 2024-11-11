@@ -1,0 +1,6 @@
+bigdata
+.DS_Store
+.nextflow
+.nextflow*
+cromwell-*
+work
