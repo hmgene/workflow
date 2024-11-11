@@ -7,6 +7,7 @@ RUN apt-get update && apt-get install -y \
     apt-transport-https \
     ca-certificates \
     gnupg \
+    gcsfuse \
     && rm -rf /var/lib/apt/lists/*
 
 # Download and install Google Cloud SDK
@@ -17,4 +18,6 @@ RUN curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cl
 
 # Add the Google Cloud SDK to PATH
 ENV PATH="/usr/local/google-cloud-sdk/bin:${PATH}"
+
+
 # Verify installation
