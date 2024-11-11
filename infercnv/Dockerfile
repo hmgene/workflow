@@ -21,6 +21,7 @@ ENV PATH="/usr/local/google-cloud-sdk/bin:${PATH}"
 RUN export GCSFUSE_REPO=gcsfuse-`lsb_release -c -s`
 RUN echo "deb https://packages.cloud.google.com/apt $GCSFUSE_REPO main" | sudo tee /etc/apt/sources.list.d/gcsfuse.list
 RUN curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
-RUN apt-get update
-RUN apt-get install -y gcsfuse
+
+RUN sudo apt-get update
+RUN sudo apt-get install gcsfuse
 # Verify installation
