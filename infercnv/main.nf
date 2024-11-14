@@ -10,17 +10,23 @@ process list_gcs_files {
 
     output:
     path "results.txt"  // Output the results to a file
-
+   
+    if( workflow.profile == "local" ){
+        prin
+    } else if (workflow.profile == "google"){
+    }
     script:
     gb=(i =~ /gs:\/\/([^\/]*)/)[0][1]
     sb=i.replaceFirst("gs://[^/]+/","")
     sb = sb.replaceFirst(/\/$/, "")
     """
+    
     #export GOOGLE_APPLICATION_CREDENTIALS=/root/service-account-key.json
     #gcloud auth activate-service-account --key-file=/root/service-account-key.json
-    mkdir -p /mnt/data
+    #mkdir -p /mnt/data
     gcsfuse --implicit-dirs --only-dir ${sb} ${gb} /mnt/data
-    R --no-save -e 'library(infercnv);add_to_seurat(infercnv_output_path="/mnt/data");' > results.txt
+    touch /mnt/data/b; echo "hi" > results.txt
+    #R --no-save -e 'library(infercnv);add_to_seurat(infercnv_output_path="/mnt/data");' > results.txt
     """
 }
 
